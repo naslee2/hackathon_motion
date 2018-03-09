@@ -19,22 +19,35 @@ import CoreMotion
 
 class ViewController: UIViewController {
     
+    enum Direction {
+        case north
+        case south
+        case east
+        case west
+    }
+    
     var motionManager = CMMotionManager()
     let opQueue = OperationQueue()
-    let currentCity = "San Jose"
-    let north = [["name" : "Seattle"], ["name" : "Seattle"], ["name" : "Seattle"], ["name": "Seattle"], ["name": "Seattle"]]
-    let west = [["name" : "Honolulu"], ["name" : "Honolulu"], ["name" : "Honolulu"], ["name" : "Honolulu"], ["name" : "Honolulu"]]
-    let east = [["name" : "Denver"], ["name" : "Denver"], ["name" : "Denver"], ["name" : "Denver"], ["name" : "Denver"]]
-    let south = [["name" : "San Diego"], ["name" : "San Diego"], ["name" : "San Diego"], ["name" : "San Diego"], ["name" : "San Diego"]]
+    var magnetometerData: CMMagnetometerData?
+    var x: Double = 0
+    var y: Double = 0
+    var z: Double = 0
+    var nums: [Double] = []
+    var heading: Double = 0
+    var direction: Direction = .north
+    
+//    motionManager.stopMagnetometerUpdates()
+
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        if motionManager.isDeviceMotionActive {
-            print("We can detect device motion")
+        if motionManager.isMagnetometerAvailable {
+            print("We can detect device direction")
+            startReadingMotionData()
         }
         else {
-            print("We cannot detect device motion")
+            print("We cannot detect device direction")
         }
     }
     
@@ -43,6 +56,7 @@ class ViewController: UIViewController {
         // Dispose of any resources that can be recreated.
     }
     
+
     override func motionEnded(_ motion: UIEventSubtype, with event: UIEvent?) {
         if (motion == .motionShake) {
             print("now we're shakin!")
@@ -97,18 +111,44 @@ class ViewController: UIViewController {
         motionManager.startDeviceMotionUpdates(to: opQueue) {
             (data: CMDeviceMotion?, error: Error?) in
             
-            if let mydata = data {
-                print("mydata", mydata.gravity)
-                //                print("pitch raw", mydata.attitude.pitch)
-                //                print("pitch", self.degrees(mydata.attitude.pitch))
+
+            if let magnetometerData = data {
+                print(magnetometerData)
+                self.x = magnetometerData.magneticField.x
+                self.y = magnetometerData.magneticField.y
+                self.z = magnetometerData.magneticField.z
+                print(" x: \(self.x), y: \(self.y), z: \(self.z)")
+                self.nums = [self.x, self.y, self.z]
+                
+                if self.y > 0 {
+//                    self.heading = (90.0 - (atan(self.x/self.y))*180/Double.pi)
+//                    print(self.heading)
+                    self.direction = .north
+                }
+                else if self.y < 0 {
+                    print("greater")
+                    self.direction = .south
+                }
+                else if self.y == 0 && self.x < 0 {
+                    self.direction = .east
+                    print("didn't make it to ifs")
+                }
+                else {
+                    self.direction = .west
+                }
             }
+                
+            else {
+                print("Device motion is nil.")
+            }
+
         }
+//        motionManager.stopMagnetometerUpdates()
     }
-    
-    
-    func degrees(_ radians: Double) -> Double {
-        return 180/Double.pi * radians
-    }
-    
+
 }
+    
+
+    
+
 
