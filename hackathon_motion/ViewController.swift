@@ -18,7 +18,11 @@ import UIKit
 import CoreMotion
 
 class ViewController: UIViewController {
+    @IBOutlet weak var SpinmeLabel: UILabel!
     
+    
+    @IBAction func stopButton(_ sender: UIButton) {
+    }
     var motionManager = CMMotionManager()
     let opQueue = OperationQueue()
     
@@ -32,6 +36,7 @@ class ViewController: UIViewController {
         else {
             print("We cannot detect device motion")
         }
+//        self.view.backgroundColor = UIColor(patternImage: (UIImage(named: "pic.jpg"))!)
     }
     
     override func didReceiveMemoryWarning() {
@@ -59,6 +64,18 @@ class ViewController: UIViewController {
     func degrees(_ radians: Double) -> Double {
         return 180/Double.pi * radians
     }
+ 
+    let north = [
+        ["name": "Seattle", "country": "United States", "population": "3,439,809", "food_dishes":"Seattle Dog, Ginger Beer", "climate": "Warm-summer Mediterranean climate", "languages": "English"],
+        ["name": "Vancouver", "country": "Canada", "population": "603,000", "food_dishes":"JapaDog, Salmon Candy", "climate": "Oceanic climate", "languages": "French, English"],
+        ["name": "Quebec City", "country": "Canada", "population": "538,238", "food_dishes":"Poutine, Tarte au sucre", "climate": "Humid continental climate", "languages": "French, English"],
+        ["name": "San Francisco", "country": "United States", "population": "870,887", "food_dishes":"Mission-Style Burrito, Joe’s Special", "climate": "Warm-summer Mediterranean climate", "languages": "English"],
+        ["name": "Anchorage", "country": "United States", "population": "291,826", "food_dishes":"Grilled Salmon, Reindeer Dogs", "climate": "Subarctic climate ", "languages": "English"]
+    ]
     
+
+    func updateUI(){
+        SpinmeLabel.text = north[0]["name"]
+    }
 }
 
